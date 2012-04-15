@@ -6,7 +6,7 @@
 #ifndef VISUALS
 #define VISUALS
 void displayCorrectKeys(void);
-void displayTime(char time);
+void displayTime(void);
 void displayAttack(void);
 
 
@@ -27,7 +27,7 @@ void displayCorrectKeys(void)
 #endif
 #endif
 }
-void displayTime(char time)
+void displayTime(void)
 {
     char temptime;
 #if FINAL

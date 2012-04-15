@@ -28,72 +28,71 @@ void main(void)
     while(1)
     {
         lock();
-    getMAGECombo();
-#if DEBUG
-    putrsUSART("Please Enter ");
-    putByteUSART(NUMBEROFKEYS);
-    putrsUSART(" separate keys.\r\n");
-#endif
-    getKeys(0);
-
-    if(checkCombo())
-    {
-#if DEBUG
-        putrsUSART("Congrats.  You got it right.  Here's your cookie!\r\n");
-#endif
-        displayCorrectKeys();
-        unlock();
-    }
-    else
-    {
-        playWrongCombo();
-#if DEBUG
-        putrsUSART("Drats.  You suck at this.  You got ");
-        displayCorrectKeys();
-        putrsUSART(" right.\r\n");
-#endif
-        displayCorrectKeys();
-#if DEBUG
-        putrsUSART("You now have ");
-        putByteUSART(TIMELIMIT/10 + 48);
-        putByteUSART(TIMELIMIT%10 +48);
-        putrsUSART(" seconds to fix this mess or die.\r\n");
-#endif
-        startTimer();
-        while(correctKeys != NUMBEROFKEYS && (time > 0))
+        getMAGECombo();
+    #if DEBUG
+        putrsUSART("Please Enter ");
+        putByteUSART(NUMBEROFKEYS);
+        putrsUSART(" separate keys.\r\n");
+    #endif
+        getKeys(0);
+        if(checkCombo())
         {
-            getKeys(1);
-            if(checkCombo() && time > 0)
+    #if DEBUG
+            putrsUSART("Congrats.  You got it right.  Here's your cookie!\r\n");
+    #endif
+            displayCorrectKeys();
+            unlock();
+        }
+        else
+        {
+            playWrongCombo();
+    #if DEBUG
+            putrsUSART("Drats.  You suck at this.  You got ");
+            displayCorrectKeys();
+            putrsUSART(" right.\r\n");
+    #endif
+            displayCorrectKeys();
+    #if DEBUG
+            putrsUSART("You now have ");
+            putByteUSART(TIMELIMIT/10 + 48);
+            putByteUSART(TIMELIMIT%10 +48);
+            putrsUSART(" seconds to fix this mess or die.\r\n");
+    #endif
+            startTimer();
+            while(correctKeys != NUMBEROFKEYS && (time > 0))
             {
-#if DEBUG
-                putrsUSART("Congrats.  You finally got it right. \r\n");
-#endif
-                displayCorrectKeys();
-                unlock();
-            }
-            else
-            {
-                if(time != 0)
+                getKeys(1);
+                if(checkCombo() && time > 0)
                 {
-                    playWrongCombo();
-#if DEBUG
-                    putrsUSART("Nope, but you got ");
+    #if DEBUG
+                    putrsUSART("Congrats.  You finally got it right. \r\n");
+    #endif
                     displayCorrectKeys();
-                    putrsUSART(" correct!\r\n");
-#endif
-                    displayCorrectKeys();
+                    unlock();
                 }
-            }
-         } //end  while
-         if(time <= 0)
-         {
-#if DEBUG
-            putrsUSART("You are now dead.  Say, \"Hi\" to your mom for me.\r\n");
-#endif
-            attack();
-         }
-    }//end if/else checkCombo
-    }
+                else
+                {
+                    if(time != 0)
+                    {
+                        playWrongCombo();
+    #if DEBUG
+                        putrsUSART("Nope, but you got ");
+                        displayCorrectKeys();
+                        putrsUSART(" correct!\r\n");
+    #endif
+                        displayCorrectKeys();
+                    }
+                }
+             } //end  while
+             if(time <= 0)
+             {
+    #if DEBUG
+                putrsUSART("You are now dead.  Say, \"Hi\" to your mom for me.\r\n");
+    #endif
+                attack();
+             }
+        }//end if/else checkCombo
+        }
 }
 // Init good to be an initialization function
 void init(void)

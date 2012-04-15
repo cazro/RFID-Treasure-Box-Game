@@ -108,7 +108,7 @@ char getByteUSART(void)
         {
             //INTCONbits.TMR0IE = 0; //Disable interrupts
             time--;
-            displayTime(time);
+            displayTime();
             INTCONbits.TMR0IF=0;   // Reset flag
             if(time == 0)
             {
