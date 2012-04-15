@@ -37,36 +37,36 @@ void main(void)
         getKeys(0);
         if(checkCombo())
         {
-    #if DEBUG
+        #if DEBUG
             putrsUSART("Congrats.  You got it right.  Here's your cookie!\r\n");
-    #endif
+        #endif
             displayCorrectKeys();
             unlock();
         }
         else
         {
             playWrongCombo();
-    #if DEBUG
+        #if DEBUG
             putrsUSART("Drats.  You suck at this.  You got ");
             displayCorrectKeys();
             putrsUSART(" right.\r\n");
-    #endif
+        #endif
             displayCorrectKeys();
-    #if DEBUG
+         #if DEBUG
             putrsUSART("You now have ");
             putByteUSART(TIMELIMIT/10 + 48);
             putByteUSART(TIMELIMIT%10 +48);
             putrsUSART(" seconds to fix this mess or die.\r\n");
-    #endif
+         #endif
             startTimer();
             while(correctKeys != NUMBEROFKEYS && (time > 0))
             {
                 getKeys(1);
                 if(checkCombo() && time > 0)
                 {
-    #if DEBUG
+                #if DEBUG
                     putrsUSART("Congrats.  You finally got it right. \r\n");
-    #endif
+                #endif
                     displayCorrectKeys();
                     unlock();
                 }
@@ -75,31 +75,31 @@ void main(void)
                     if(time != 0)
                     {
                         playWrongCombo();
-    #if DEBUG
+                     #if DEBUG
                         putrsUSART("Nope, but you got ");
                         displayCorrectKeys();
                         putrsUSART(" correct!\r\n");
-    #endif
+                     #endif
                         displayCorrectKeys();
                     }
                 }
              } //end  while
              if(time <= 0)
              {
-    #if DEBUG
+             #if DEBUG
                 putrsUSART("You are now dead.  Say, \"Hi\" to your mom for me.\r\n");
-    #endif
+             #endif
                 attack();
              }
         }//end if/else checkCombo
-        }
+    }
 }
 // Init good to be an initialization function
 void init(void)
 {
-    OSCCONbits.IRCF2 = 1;
-    OSCCONbits.IRCF1 = 1;
-    OSCCONbits.IRCF0 = 1;
+        OSCCONbits.IRCF2 = 1;
+        OSCCONbits.IRCF1 = 1;
+        OSCCONbits.IRCF0 = 1;
         TRISA = 0x00;           // Make Pins 0, and 3 output
         TRISC = 0x80;           // Makes UART Recieve pin an Input, TX an output
         TRISD = 0x00;
@@ -155,24 +155,3 @@ void attack(void)
     playAttack();
     displayAttack();
 }
-/*
-#pragma code InterruptVectorHigh = 0x08
-void InterruptVectorHigh (void)
-{
-_asm
-     goto InterruptServiceHigh //jump to interrupt routine
- _endasm
-}
-#pragma interrupt InterruptServiceHigh  // "interrupt" pragma also for high priority
-void InterruptServiceHigh(void)
-{
-    if (INTCONbits.TMR0IF == 1)     // Timer0 Overflow interrupt flag is thrown
-    {
-        INTCONbits.TMR0IE = 0; //Disable interrupts
-        time--;
-        putsUSART(time);
-        putrsUSART("\n");
-	INTCONbits.TMR0IF=0;   // Reset flag
-        INTCONbits.TMR0IE = 1; // Re-enable interrupt
-    }
-}*/
