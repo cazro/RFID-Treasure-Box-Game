@@ -6,6 +6,7 @@
 
 void irTXInit(void);
 void putcIR(char data);
+void IRAttack(void);
 
 unsigned char IRData[11];
 
@@ -66,4 +67,8 @@ void putcIR(char data)
         }
         LED_low;
         CloseTimer0();
+}
+void IRAttack(void)
+{
+    putcIR(214);
 }

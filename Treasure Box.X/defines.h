@@ -1,4 +1,7 @@
 // DEFINES
+#ifndef DEFINES
+#define DEFINES
+
 #define CHEAT 1
 #define FINAL 1
 #define DEBUG 0
@@ -18,3 +21,4 @@
 #define RFIDLEDOFF LATBbits.LATB1 = 0
 #define LOCK LATBbits.LATB2 = 1
 #define UNLOCK LATBbits.LATB2 = 0
+#endif

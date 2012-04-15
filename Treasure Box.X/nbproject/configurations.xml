@@ -6,6 +6,14 @@
                    projectFiles="true">
       <itemPath>defines.h</itemPath>
       <itemPath>IR.h</itemPath>
+      <itemPath>constants.h</itemPath>
+      <itemPath>rfid.h</itemPath>
+      <itemPath>globals.h</itemPath>
+      <itemPath>visuals.h</itemPath>
+      <itemPath>main.h</itemPath>
+      <itemPath>xbee.h</itemPath>
+      <itemPath>audio.h</itemPath>
+      <itemPath>security.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
