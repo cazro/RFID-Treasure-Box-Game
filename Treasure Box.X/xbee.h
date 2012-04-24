@@ -2,20 +2,26 @@
 #include "defines.h"
 #include "constants.h"
 #include "globals.h"
+#include "delays.h"
+
+#ifndef XBEE
+#define XBEE
 
 char getByteXbee(void);
 void putByteXbee(char data);
 void Xbee_senddata(void);
 void Xbee_recdata(void);
 void getMAGECombo(void);
-
+void genRandCombo(void);
+void initADCON(void);
+int getSeed(void);
 
 char getByteXbee(void)
 {
     while(!PIR3bits.RC2IF);
     return RCREG2;
 }
-void Xbee_recvdata(void){
+void Xbee_recdata(void){
     char i,p;
     char receivedata[100];
 
@@ -28,18 +34,30 @@ void Xbee_recvdata(void){
     for(i=3;i<(p+3);i++)
 	receivedata[i] = getByteXbee();
 
-    mageCombo[0] = receivedata[p-1];
-    mageCombo[1] = receivedata[p];
-    mageCombo[2] = receivedata[p+1];
-    mageCombo[3] = receivedata[p+2];
-
     receivedata[p+3] = getByteXbee();
-
-  /*  for(i=0;i<(p+4);i++)
+    if(receivedata[p-1] == 0xFF || receivedata[p] == 0xFF || receivedata[p+1] == 0xFF || receivedata[p+2] == 0xFF)
     {
-        putByteXbee(receivedata[i]);
+        genRandCombo();
     }
-*/
+    else
+    {
+        mageCombo[0] = receivedata[p-1];
+        mageCombo[1] = receivedata[p];
+        mageCombo[2] = receivedata[p+1];
+        mageCombo[3] = receivedata[p+2];
+    }
+#if THECHEAT
+    Delay10KTCYx(100);
+    displayCorrectKeys(mageCombo[0]-48);
+    Delay10KTCYx(150);
+    displayCorrectKeys(mageCombo[1]-48);
+    Delay10KTCYx(150);
+    displayCorrectKeys(mageCombo[2]-48);
+    Delay10KTCYx(150);
+    displayCorrectKeys(mageCombo[3]-48);
+    Delay10KTCYx(150);
+    displayCorrectKeys(0);
+#endif
 }
 void putByteXbee(char data)
 {
@@ -76,55 +94,60 @@ void Xbee_senddata()
 }
 void getMAGECombo(void)
 {
-#if FINAL
+    RCSTA1bits.SPEN = 0;
     Xbee_senddata();
-   // Xbee_recdata();
-
-#else
-    char numCheck[NUMBEROFKEYS];
-    char i,tempKey;
-    int seed;
-    for(i=0;i<NUMBEROFKEYS;i++)
-        numCheck[i] = 0;
-    putrs1USART("\r\nRetrieving New Combination");
-
+    Xbee_recdata();
+    RCSTA1bits.SPEN = 1;
+}
+void initADCON(void)
+{
     ADCON1 = 0x0E;
     ADCON0 = 0x00;
     ADCON2 = 0x80;
     ADCON0 = 0x01;
-    ADCON0 |= 0x02;
-    while((ADCON0 & 0x02));
+}
+int getSeed(void)
+{
+    int seed;
     seed = ADRESH;
     seed <<= 8;
     seed += ADRESL;
+    return seed;
+}
+void genRandCombo(void)
+{
+    char numCheck[NUMBEROFKEYS];
+    char i,tempKey;
 
+    for(i=0;i<NUMBEROFKEYS;i++)
+        numCheck[i] = 0;
+
+    initADCON();
+
+    ADCON0bits.GO = 1;
+
+    //while((!ADCON0bits.DONE));
+    seed = (seed * 25173 + 13849)%65536;
     srand(seed);
-
-#if CHEAT
-    putrs1USART("\r\nCheats are ON\r\n");
-#endif
 
     for(i=0;i<NUMBEROFKEYS;i++)
     {
-        tempKey = (char)(rand() % NUMBEROFKEYS);
-        ADCON0 |= 0x02;
-        while((ADCON0 & 0x02));
-        seed = ADRESH;
-        seed <<= 8;
-        seed += ADRESL;
-        srand(seed);
+        tempKey = (char)((rand()+i) % NUMBEROFKEYS);
+ 
+        ADCON0bits.GO = 1;
+        //while((!ADCON0bits.DONE));
+
         while(numCheck[tempKey])
-        {
-            tempKey = rand() % NUMBEROFKEYS;
-        }
+            tempKey = (rand()+i) % NUMBEROFKEYS;
+
         mageCombo[i] = tempKey+49;
-#if CHEAT
-        putByteUSART(mageCombo[i]);
+        
+#if THECHEAT
+        displayCorrectKeys(tempKey+1);
+        Delay10KTCYx(150);
 #endif
         numCheck[tempKey] = 1;
     }
-
-
-    putrs1USART("\r\nRandom MAGE Combination Generated\r\n");
-#endif
+    displayCorrectKeys(0);
 }
+#endif

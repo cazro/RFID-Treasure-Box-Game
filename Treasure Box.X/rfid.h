@@ -4,6 +4,10 @@
 #include "globals.h"
 #include "main.h"
 #include "visuals.h"
+#include "audio.h"
+
+#ifndef RFID
+#define RFID
 
 void putByteUSART(char data);
 char getByteUSART(void);
@@ -19,6 +23,8 @@ void getKeys(char timeCheck)
         if(time > 0 && timeCheck)
         {
             userCombo[i] = getRFID();
+            if(userCombo[i]== 'M')
+                i=NUMBEROFKEYS;
 #if DEBUG
             putByteUSART(userCombo[i]);
             putrs1USART("\r\n");
@@ -27,6 +33,8 @@ void getKeys(char timeCheck)
         else if(!timeCheck)
         {
             userCombo[i] = getRFID();
+            if(userCombo[i]== 'M')
+                i=NUMBEROFKEYS;
 #if DEBUG
             putByteUSART(userCombo[i]);
             if(i==(NUMBEROFKEYS-1))
@@ -38,10 +46,10 @@ void getKeys(char timeCheck)
 }
 void blinkRFIDLED(void)
 {
-    RFIDLEDON;
+    GREENLED;
     ATTACKLEDON;
     Delay10KTCYx(10);
-    RFIDLEDOFF;
+    REDLED;
     ATTACKLEDOFF;
 }
 char getRFID(void)
@@ -67,30 +75,55 @@ char getRFID(void)
 
     blinkRFIDLED();
     for(i=0;i<RFIDBYTES;i++)
+        if(rfid[i] != master[i])
+            break;
+        else
+            if(i==(RFIDBYTES-1))
+                return 'M';
+    for(i=0;i<RFIDBYTES;i++)
         if(rfid[i] != key1[i])
             break;
         else
             if(i==(RFIDBYTES-1))
+            {
+            #if THECHEAT
+                displayCorrectKeys(1);
+            #endif
                 return '1';
+            }
     for(i=0;i<RFIDBYTES;i++)
         if(rfid[i] != key2[i])
             break;
         else
             if(i==(RFIDBYTES-1))
+            {
+             #if THECHEAT
+                displayCorrectKeys(2);
+             #endif
                 return '2';
+            }
     for(i=0;i<RFIDBYTES;i++)
         if(rfid[i] != key3[i])
             break;
         else
             if(i==(RFIDBYTES-1))
+            {
+            #if THECHEAT
+                displayCorrectKeys(3);
+            #endif
                 return '3';
+            }
     for(i=0;i<RFIDBYTES;i++)
         if(rfid[i] != key4[i])
             break;
         else
             if(i==(RFIDBYTES-1))
+            {
+            #if THECHEAT
+                displayCorrectKeys(4);
+            #endif
                 return '4';
-
+            }
     return '\r';
 }
 
@@ -108,14 +141,19 @@ char getByteUSART(void)
         {
             //INTCONbits.TMR0IE = 0; //Disable interrupts
             time--;
-            displayTime();
+            displayTime(time);
             INTCONbits.TMR0IF=0;   // Reset flag
             if(time == 0)
             {
                 stopTimer();
                 break;
             }
-           // INTCONbits.TMR0IE = 1; // Re-enable interrupt
+            else if(time == (TIMELIMIT / 5))
+            {
+                playTimeClose();
+            }
+
+            // INTCONbits.TMR0IE = 1; // Re-enable interrupt
         }
         if(RCSTA1bits.OERR)
         {
@@ -129,3 +167,4 @@ char getByteUSART(void)
     else
         return '0';
 }
+#endif

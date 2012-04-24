@@ -24,7 +24,7 @@ void irTXInit(void)
         CCP4CON &= 0b00011100;
         /* Configure CCP1 pin as an output */
         TRISGbits.TRISG3 = 0;
-        LATGbits.LATG2=0;
+        LATGbits.LATG3=0;
         /* Set the TMR2 prescale value */
         T2CONbits.T2CKPS1 = 0;
         T2CONbits.T2CKPS0 = 1;
@@ -70,5 +70,28 @@ void putcIR(char data)
 }
 void IRAttack(void)
 {
+    putcIR(214);
+    putcIR(214);
+    putcIR(214);
+    putcIR(214);
+    putcIR(214);
+    putcIR(214);
+    putcIR(214);
+    putcIR(214);
+    putcIR(214);
+    putcIR(214);
+    putcIR(214);
+    putcIR(214);
+    putcIR(214);
+    putcIR(214);
+    putcIR(214);
+    putcIR(214);
+    putcIR(214);
+    putcIR(214);
+    putcIR(214);
+    putcIR(214);
+    putcIR(214);
+    putcIR(214);
+    putcIR(214);
     putcIR(214);
 }

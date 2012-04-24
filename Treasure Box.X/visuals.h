@@ -5,20 +5,22 @@
 
 #ifndef VISUALS
 #define VISUALS
-void displayCorrectKeys(void);
-void displayTime(void);
+
+void displayCorrectKeys(char correct);
+void displayTime(char disp);
 void displayAttack(void);
+void disp2Digs(char dig1, char dig2);
+void scrollClass(void);
 
-
-void displayCorrectKeys(void)
+void displayCorrectKeys(char correct)
 {
 #if FINAL
     PORTD = 0x00;
-    PORTD = 0b00010000 | correctKeys;
+    PORTD = 0b00010000 | correct;
     Delay1TCY();
-    PORTD = 0b10010000 | correctKeys;
+    PORTD = 0b10010000 | correct;
     Delay100TCYx(1);
-    PORTD = 0b00010000 | correctKeys;
+    PORTD = 0b00010000 | correct;
 
 #else
     correctKeys += 48;
@@ -27,23 +29,32 @@ void displayCorrectKeys(void)
 #endif
 #endif
 }
-void displayTime(void)
+void disp2Digs(char dig1, char dig2)
 {
-    char temptime;
-#if FINAL
-    temptime = time/10;
-    PORTD = 0b00110000 | temptime;
-    PORTD = 0b10110000 | temptime;
+    PORTD = 0b00110000 | dig1;
+    PORTD = 0b10110000 | dig1;
     Delay100TCYx(1);
-    temptime = time%10;
-    PORTD = 0b00100000 | temptime;
-    PORTD = 0b10100000 | temptime;
+    PORTD = 0b00100000 | dig2;
+    PORTD = 0b10100000 | dig2;
+
+}
+void displayTime(char disp)
+{
+    char temp;
+#if FINAL
+    temp = disp/10;
+    PORTD = 0b00110000 | temp;
+    PORTD = 0b10110000 | temp;
+    Delay100TCYx(1);
+    temp = disp%10;
+    PORTD = 0b00100000 | temp;
+    PORTD = 0b10100000 | temp;
 
 #if DEBUG
-    temptime = (time/10) + 48;
-    putByteUSART(temptime);
-    temptime = (time%10) + 48;
-    putByteUSART(temptime);
+    temp = (time/10) + 48;
+    putByteUSART(temp);
+    temp = (time%10) + 48;
+    putByteUSART(temp);
     putrs1USART("\r\n");
 #endif
 #endif
@@ -68,5 +79,32 @@ void displayAttack(void)
         Delay10KTCYx(25);
     }
 #endif
+}
+void scrollClass(void)
+{
+    displayTime(0);
+    Delay10KTCYx(scrollDelay);
+    disp2Digs(0x0A,0x0C); // -H
+    Delay10KTCYx(scrollDelay);
+    disp2Digs(0x0C,0x0B); // HE
+    Delay10KTCYx(scrollDelay);
+    disp2Digs(0x0B,0x0D); // EL
+    Delay10KTCYx(scrollDelay);
+    disp2Digs(0x0D,0x0E); // LP
+    Delay10KTCYx(scrollDelay);
+    disp2Digs(0x0E,0x0A); // P-
+    Delay10KTCYx(scrollDelay);
+    disp2Digs(0x0A,0x04); // -4
+    Delay10KTCYx(scrollDelay);
+    disp2Digs(0x04,0x00); // 40
+    Delay10KTCYx(scrollDelay);
+    disp2Digs(0x00,0x01); // 01
+    Delay10KTCYx(scrollDelay);
+    disp2Digs(0x01,0x03); // 13
+    Delay10KTCYx(scrollDelay);
+    disp2Digs(0x03,0x0A); // 3-
+    Delay10KTCYx(scrollDelay);
+    disp2Digs(0x0A,0x0A); // --
+    Delay10KTCYx(75);
 }
 #endif
