@@ -59,6 +59,7 @@ void init(void)
     PIE3bits.TX2IE = 1;
     INTCONbits.TMR0IE = 1; // Enable Timer0 Overflow interrupt
     j=0;
+    LOCK;
     scrollClass();
 }
 void runGame(void)

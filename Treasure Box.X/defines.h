@@ -2,7 +2,7 @@
 #ifndef DEFINES
 #define DEFINES
 
-#define THECHEAT 0
+#define THECHEAT 1
 #define FINAL 1
 #define DEBUG 0
 #define NUMBEROFKEYS  4

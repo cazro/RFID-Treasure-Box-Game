@@ -24,40 +24,49 @@ char getByteXbee(void)
 void Xbee_recdata(void){
     char i,p;
     char receivedata[100];
+    char valid = 0;
 
-    receivedata[0] = getByteXbee();
-    receivedata[1] = getByteXbee();
-    receivedata[2] = getByteXbee();
-
-    p = receivedata[2];
-
-    for(i=3;i<(p+3);i++)
-	receivedata[i] = getByteXbee();
-
-    receivedata[p+3] = getByteXbee();
-    if(receivedata[p-1] == 0xFF || receivedata[p] == 0xFF || receivedata[p+1] == 0xFF || receivedata[p+2] == 0xFF)
+    while(!valid)
     {
-        genRandCombo();
+        receivedata[0] = getByteXbee();
+        receivedata[1] = getByteXbee();
+        receivedata[2] = getByteXbee();
+
+        p = receivedata[2];
+
+        for(i=3;i<(p+3);i++)
+            receivedata[i] = getByteXbee();
+
+        receivedata[p+3] = getByteXbee();
+        if(receivedata[3] == 0x81)
+            valid = 1;
+        if(valid)
+        {
+            if(receivedata[p-1] == 0xFF || receivedata[p] == 0xFF || receivedata[p+1] == 0xFF || receivedata[p+2] == 0xFF)
+            {
+                genRandCombo();
+            }
+            else
+            {
+                mageCombo[0] = receivedata[p-1];
+                mageCombo[1] = receivedata[p];
+                mageCombo[2] = receivedata[p+1];
+                mageCombo[3] = receivedata[p+2];
+
+            #if THECHEAT
+                displayCorrectKeys(mageCombo[0]-48);
+                Delay10KTCYx(scrollDelay);
+                displayCorrectKeys(mageCombo[1]-48);
+                Delay10KTCYx(scrollDelay);
+                displayCorrectKeys(mageCombo[2]-48);
+                Delay10KTCYx(scrollDelay);
+                displayCorrectKeys(mageCombo[3]-48);
+                Delay10KTCYx(scrollDelay);
+                displayCorrectKeys(0);
+            #endif
+            }
+        }
     }
-    else
-    {
-        mageCombo[0] = receivedata[p-1];
-        mageCombo[1] = receivedata[p];
-        mageCombo[2] = receivedata[p+1];
-        mageCombo[3] = receivedata[p+2];
-    }
-#if THECHEAT
-    Delay10KTCYx(100);
-    displayCorrectKeys(mageCombo[0]-48);
-    Delay10KTCYx(150);
-    displayCorrectKeys(mageCombo[1]-48);
-    Delay10KTCYx(150);
-    displayCorrectKeys(mageCombo[2]-48);
-    Delay10KTCYx(150);
-    displayCorrectKeys(mageCombo[3]-48);
-    Delay10KTCYx(150);
-    displayCorrectKeys(0);
-#endif
 }
 void putByteXbee(char data)
 {
@@ -122,20 +131,12 @@ void genRandCombo(void)
     for(i=0;i<NUMBEROFKEYS;i++)
         numCheck[i] = 0;
 
-    initADCON();
-
-    ADCON0bits.GO = 1;
-
-    //while((!ADCON0bits.DONE));
     seed = (seed * 25173 + 13849)%65536;
     srand(seed);
 
     for(i=0;i<NUMBEROFKEYS;i++)
     {
         tempKey = (char)((rand()+i) % NUMBEROFKEYS);
- 
-        ADCON0bits.GO = 1;
-        //while((!ADCON0bits.DONE));
 
         while(numCheck[tempKey])
             tempKey = (rand()+i) % NUMBEROFKEYS;
@@ -144,7 +145,7 @@ void genRandCombo(void)
         
 #if THECHEAT
         displayCorrectKeys(tempKey+1);
-        Delay10KTCYx(150);
+        Delay10KTCYx(scrollDelay);
 #endif
         numCheck[tempKey] = 1;
     }
